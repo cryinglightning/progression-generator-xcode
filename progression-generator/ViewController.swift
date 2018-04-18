@@ -15,11 +15,12 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     @IBOutlet weak var keyPkr: UIPickerView!
     @IBOutlet weak var genBtn: UIButton!
     @IBOutlet weak var seqPkr: UIPickerView!
+    @IBOutlet weak var display: UILabel!
     
     
-    let keys = [["E", "F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#"], ["major", "minor"]]
+    let keys = [["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"], ["major", "minor"]]
     
-    let seq = ["I IV V I": [0, 3, 4, 0], "I iii V I": [0, 2, 4, 0], "I V vi IV": [0, 4, 5, 3], "I vi IV V": [0, 5, 3, 4], "I, IV, V, IV": [0, 3, 4, 3]]
+    let seq = ["I IV V I": [0, 3, 4, 0], "I iii V I": [0, 2, 4, 0], "I V vi IV": [0, 4, 5, 3], "I vi IV V": [0, 5, 3, 4], "I, IV, V, IV": [0, 3, 4, 3], "I, ii, iii, IV, V": [0, 1, 2, 3, 4],"I V vi iii IV I IV V": [0, 4, 5, 2, 3, 0, 3, 4]]
     
     var keyLetterIndex = 0
     var scale = [0, 2, 4, 5, 7, 9, 11]
@@ -27,8 +28,8 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     var keyTonic = [0, 1, 1, 0, 0, 1, 1]
     let majMin = ["", "m"]
     var progBase = [0, 4, 5, 3]
-    var keyProg = "E B C#m A"
-    
+    var keyProg = "A    E    F#m    D"
+    var count = 4
     override func viewDidLoad() {
         
         keyPkr.delegate = self
@@ -84,6 +85,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         }
         else {
             progBase = Array(seq.values)[row]
+            count = Array(seq.values)[row].count
         }
         
         func prog(n: Int) -> Int {
@@ -94,11 +96,15 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             return keyTonic[progBase[n]]
         }
         
-        keyProg = keys[0][(keyLetterIndex + prog(n: 0)) % keys[0].count] + majMin[(tonicFn(n: 0)) % keyTonic.count] + " " + keys[0][(keyLetterIndex + prog(n: 1)) % keys[0].count] + majMin[(tonicFn(n: 1)) % keyTonic.count] + " " + keys[0][(keyLetterIndex + prog(n: 2)) % keys[0].count] + majMin[(tonicFn(n: 2)) % keyTonic.count] + " " + keys[0][(keyLetterIndex + prog(n: 3)) % keys[0].count] + majMin[(tonicFn(n: 3)) % keyTonic.count]
+        var results: [String] = []
+        for i in 0..<count {
+            results.append(keys[0][(keyLetterIndex + prog(n: i)) % keys[0].count] + majMin[(tonicFn(n: i)) % keyTonic.count])
+        }
+        keyProg = results.joined(separator: "   ")
     }
-
+    
     @IBAction func pressGen(_ sender: UIButton) {
-        genBtn.setTitle(keyProg, for: .normal)
+        self.display.text = keyProg
         }
     
 }
